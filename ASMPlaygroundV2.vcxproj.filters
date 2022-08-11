@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <MASM Include="fizzbuzz.asm" />
+    <MASM Include="_main.asm" />
+    <MASM Include="2048_main.asm" />
+    <MASM Include="gcd.asm" />
+    <MASM Include="gcd_test.asm" />
+    <MASM Include="fizzbuzz_test.asm" />
+    <MASM Include="2048_printer.asm" />
+    <MASM Include="2048_tilegen.asm" />
+    <MASM Include="2048_util.asm" />
+    <MASM Include="2048_input.asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="2048_ansi_support.cpp" />
+  </ItemGroup>
+</Project>
