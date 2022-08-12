@@ -1,12 +1,12 @@
 extern	printf:proc
 
 .data
-board_str		db "| %4d | %4d | %4d | %4d |", 10, 0
 number_str		db " %4d ", 0
 horizontal_ln	db " ------ ", 0
 vertical_line	db "|", 0
 new_line		db 10, 0
 
+; Variables for each of the 2048 tile colors for the background w/ black text
 blank_tile_color            db 27, "[38;2;0;0;0;48;2;207;195;184m", 0
 two_tile_color				db 27, "[38;2;0;0;0;48;2;238;228;218m", 0
 four_tile_color             db 27, "[38;2;0;0;0;48;2;237;224;200m", 0
@@ -35,13 +35,15 @@ PRINT macro string
 	pop		rcx		; I have no clue, but it breaks w/out it
 endm
 
+;; ----------------------------------------------------------------------------
+;;	Utility macro to print stuff with a color derived from a calculated index
+;; ----------------------------------------------------------------------------
 PRINTC macro string
 	movzx	edx, word ptr [rsi + r14 * 2]
 	mov		ecx, edx
 	call	get_color
-	mov		rbx, rdx
 	PRINT	[rax]
-	mov		rdx, rbx
+	movzx	edx, word ptr [rsi + r14 * 2]
 	PRINT	string
 	PRINT	clear_color
 endm
@@ -54,7 +56,7 @@ endm
 print_board proc
 	push	rbx
 	push	rbp
-
+	
 	mov		rsi, rcx		; Set the board pointer to the RSI register
 
 	xor		r15, r15		; Row loop counter
@@ -66,7 +68,6 @@ print_board proc
 			inc		r14
 			cmp		r14, 4
 			jl		ColIterations1	; Go through this loop once per col
-
 		PRINT	new_line
 
 		xor		r14, r14	; Col loop counter
@@ -78,18 +79,15 @@ print_board proc
 			inc		r14
 			cmp		r14, 4
 			jl		ColIterations2	; Go through this loop once per col
-
-			xor		r14, r14	; Col loop counter
-
 		PRINT	new_line
 
+		xor		r14, r14	; Col loop counter
 		ColIterations3:
 			PRINTC	horizontal_ln
 
 			inc		r14
 			cmp		r14, 4
 			jl		ColIterations3	; Go through this loop once per col
-
 		PRINT	new_line
 
 		add		rsi, 8
@@ -103,14 +101,25 @@ print_board proc
 	ret	
 print_board endp
 
+;; ----------------------------------------------------------------------------
+;;	Utility macro for use with the following procedure; If the tile number
+;;	matches the given 'num', the given 'color' is returned
+;; ----------------------------------------------------------------------------
 .code
 IF_NUM_THEN macro num, color
-	lea		rbx, color
-	cmp		rcx, num
-	cmove	rax, rbx
-	je		Finished
+	lea		rbx, color	; Load the given color into rbx
+	cmp		rcx, num	; Compare the tile number and the given number
+	cmove	rax, rbx	; If they're the same, move the color into rax
+	je		Finished	; and jump to the Finish Point
 endm
 
+;; ----------------------------------------------------------------------------
+;;	Returns the color that corresponds to the given tile number
+;;	
+;;	Params: rcx -> tile number
+;;	
+;;	Returns: Corresponding color, with 'undefined_tile_color' if none match
+;; ----------------------------------------------------------------------------
 get_color proc
 	push	rbx
 

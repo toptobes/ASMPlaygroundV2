@@ -31,7 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <MASM Include="2048_tilegen.asm">
-      <FileType>CppCode</FileType>
+      <FileType>MASM</FileType>
     </MASM>
   </ItemGroup>
   <ItemGroup>
