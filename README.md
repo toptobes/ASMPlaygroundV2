@@ -5,5 +5,4 @@ Idk, me playing with assembly
 
 ### Oh right, and the 2048 logic is slightly broken...
 
-
-https://user-images.githubusercontent.com/96998732/184447143-f9399ea9-82e4-40d7-ada3-d5fa03bff53b.mp4
+https://user-images.githubusercontent.com/96998732/184447278-ff088a57-ff43-46a0-80d8-6d24f3218cc4.mp4
