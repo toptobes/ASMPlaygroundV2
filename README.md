@@ -3,6 +3,6 @@ Idk, me playing with assembly
 
 ### The formatting looks good in Visual Studio, but it seems to be screwed up in file format...
 
-### also and the 2048 logic can sometimes be slightly broken
+### also the 2048 logic can sometimes be slightly broken
 
 https://user-images.githubusercontent.com/96998732/184447278-ff088a57-ff43-46a0-80d8-6d24f3218cc4.mp4
