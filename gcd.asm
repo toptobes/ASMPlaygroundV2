@@ -10,7 +10,7 @@ gcd proc
 	GCDLoop:				; Loops that runs until rax % rdx == 0
 		mov		r8, rdx		; Save r8 to rdx as rdx will be overridden
 		xor		rdx, rdx	; Zero out rdx
-		div		r8			; Divide rax by r8 (aka rdx)
+		div		r8		; Divide rax by r8 (aka rdx)
 	
 		mov		rax, r8		; The divisor will be dividend next interation
 
@@ -18,7 +18,7 @@ gcd proc
 		jnz		GCDLoop		; Continue the loop
 
 	mov		rax, r8			; Set the return value to the GCD
-	ret						; Return (this one is here for ODC purposes)
+	ret					; Return (this one is here for OCD purposes)
 
 	Error:
 		mov		rax, 0
