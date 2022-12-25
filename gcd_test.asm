@@ -11,18 +11,18 @@ gcd_test proc
 	mov		rdx, 78 * 57
 
 	; GCD
-	call	gcd
+	call	        gcd
 
 	; Assign parameters for printing
 	lea		rcx, number_str
 	mov		rdx, rax
 
 	; Printf
-	push	rbp
+	push	        rbp
 	sub		rsp, 32
-	call	printf
+	call	        printf
 	add		rsp, 32
-    pop     rbp
+    	pop             rbp
 
 	; Return with exit code 0
 	xor		rax, rax
