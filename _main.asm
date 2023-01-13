@@ -5,9 +5,9 @@ extern GetProcessHeap:proc
 extern HeapAlloc:proc
 
 .data
-matrix_dbl_ptr   dq ?
-sqr_size_ptr dq ?
-sums_ptr     dq ?
+matrix_dbl_ptr dq ?
+sqr_size_ptr   dq ?
+sums_ptr       dq ?
 
 number_str   db "%d", 0
 display_str  db "Un number: %d", 10, 0
