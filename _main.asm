@@ -92,25 +92,25 @@ read_sqr endp
 test_if_magic proc
 	xor     rcx, rcx
 
-	mov    	cl, byte ptr [sqr_size_ptr]
-	movzx 	r9, cl
+	mov    	cl,  byte ptr [sqr_size_ptr]
+	movzx 	r9,  cl
 
 	xor     eax, eax
 
-	mov     ax, -1
-	shl     ax, cl
+	mov     ax,  -1
+	shl     ax,  cl
 	not     ax
 
-	kmovd	k1, eax
+	kmovd	k1,  eax
 
 	mov		r8,  qword ptr [matrix_dbl_ptr]
 
-	vmovdqu32   zmm0{k1}{z}, zmmword ptr [r8]
+	vmovdqu32    zmm0{k1}{z}, zmmword ptr [r8]
 		
 	StraightSumLoop:
 		mov     rdx, 4
 		imul    rdx, rcx
-		add		r8, rdx
+		add		r8,  rdx
 
 		vmovdqu32   zmm1{k1}{z}, zmmword ptr [r8]
 
