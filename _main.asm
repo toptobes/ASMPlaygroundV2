@@ -23,11 +23,11 @@ main proc
 	mov     matrix_dbl_ptr, rax
 	
 	call    read_sqr
-
+	
 	call    test_if_magic
 	
 	xor     rdx, rdx
-
+	
 	lea     rcx, display_str
 	mov     dl,  byte ptr [sqr_size_ptr]
 	
@@ -68,7 +68,7 @@ alloc_sqr_mem endp
 
 read_sqr proc
     mov     r14,  matrix_dbl_ptr
-
+	
 	xor     r15,  r15
     mov     r15b, byte ptr [sqr_size_ptr]
 	imul    r15,  r15
@@ -91,43 +91,43 @@ read_sqr endp
 
 test_if_magic proc
 	xor     rcx, rcx
-
-	mov    	cl,  byte ptr [sqr_size_ptr]
-	movzx 	r9,  cl
-
+		   
+	mov     cl,  byte ptr [sqr_size_ptr]
+	movzx   r9,  cl
+		   
 	xor     eax, eax
-
+		   
 	mov     ax,  -1
 	shl     ax,  cl
 	not     ax
-
-	kmovd	k1,  eax
-
-	mov		r8,  qword ptr [matrix_dbl_ptr]
-
+		   
+	kmovd   k1,  eax
+		   
+	mov     r8,  qword ptr [matrix_dbl_ptr]
+	
 	vmovdqu32    zmm0{k1}{z}, zmmword ptr [r8]
 		
 	StraightSumLoop:
 		mov     rdx, 4
 		imul    rdx, rcx
-		add		r8,  rdx
-
+		add     r8,  rdx
+		
 		vmovdqu32   zmm1{k1}{z}, zmmword ptr [r8]
-
-		vpaddd	    zmm0, zmm0, zmm1
-
+		
+		vpaddd      zmm0, zmm0, zmm1
+		
 		vphaddd     ymm3, ymm1, ymm1
-		valignq	    zmm2, zmm1, zmm1, 4
+		valignq     zmm2, zmm1, zmm1, 4
 		vphaddd     ymm4, ymm2, ymm2
-
-		xor		r10, r10
-		xor		r11, r11
-
+		
+		xor     r10, r10
+		xor     r11, r11
+		
 		vmovd	xmm3, r10d
 		vmovd	xmm4, r11d
-		add		r10d, r11d
-
-		dec		r9
+		add     r10d, r11d
+		
+		dec r9
 		jnz StraightSumLoop
 
 	ret
