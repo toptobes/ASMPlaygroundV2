@@ -27,6 +27,7 @@
     <MASM Include="fizzbuzz_test.asm" />
     <MASM Include="gcd.asm" />
     <MASM Include="gcd_test.asm" />
+    <MASM Include="magic_square_main.asm" />
     <MASM Include="_main.asm" />
   </ItemGroup>
   <ItemGroup>
