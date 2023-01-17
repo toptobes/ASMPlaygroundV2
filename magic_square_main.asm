@@ -276,6 +276,8 @@ print_magic_square endp
 ; so that everything is nicely aligned when comes printing time
 ;
 ; e.g. `"%3d, ", 0`
+;
+; and yes I know a LUT-esque thing would've been much better, I just wanted to figure this one out
 ;-------------------------------------------------------------------------------------
 create_num_list_fmt proc
 	mov     ecx, sqr_size                          ; We find the total size of the matrix (i.e. sqr_size ^ 2)
@@ -352,6 +354,9 @@ read_sqr endp
 
 ;-------------------------------------------------------------------------------------
 ; Hooooooooo boy, this is going to be a doozy to explain
+;
+; it is also terribly stupid and overcomplicated and only works up to a magic square size of 16
+; but I don't care lol I just did it for fun even if parts are inefficient or naive
 ;-------------------------------------------------------------------------------------
 test_if_magic proc
 	mov     ecx, sqr_size	    ; Okay, so, we use rcx both for easy access to the square size, but also so I can use cl for shifting later
@@ -369,51 +374,64 @@ test_if_magic proc
 		   
 	kmovd   k1,  eax            ; We'll load k1 (the first usable avx512 mask register) with that mask now
 	
-	mov     r10, 1              ; We'll load r10 with 0b00000000000000000000000000000001 too
+	mov     r10, 1              ; We'll load r10 with 0b00000001 too
 	kmovd   k2,  r10            ; and pop that one into r2
 		   
-	mov     r8,  matrix_ptr
+	mov     r8,  matrix_ptr     ; right and we're'na user r8 as the matrix ptr and will offset the value later too
 	
-	vpxor   xmm0, xmm0, xmm0
+	vpxor   xmm0, xmm0, xmm0    ; and finally zero out xmm0 (which implicitly clears all of zmm0)
 
 	StraightSumLoop:
-		vpaddd      zmm0{k1}{z}, zmm0, zmmword ptr [r8]
-		
-		vmovdqu32   zmm2{k1}{z}, zmmword ptr [r8]
-		
-		vphaddd     ymm3, ymm2, ymm2
-		valignq     zmm2, zmm2, zmm2, 4
-		vphaddd     ymm4, ymm2, ymm2
-		
-		vpaddb      ymm3, ymm3, ymm4
-		
-		vmovd		edx, xmm3
-        vpextrd     eax, xmm3, 1
-        add         eax, edx
-		
-		vpbroadcastd    ymm1{k2}, eax
-		
-		shl     r10, 1
-		kmovd   k2,  r10
-		
-		mov     rdx, rcx
-		shl     rdx, 2
-		add     r8,  rdx
-		
-		dec     r9
-		jnz StraightSumLoop
+		vpaddd      zmm0{k1}{z}, zmm0, zmmword ptr [r8] ; OKAY, so, first we take the first 512 bits of the matrix, and add it to whatever is in
+		                                                ; zmm0. zmm0 starts at 0, and keeps adding up
 
-	mov     r9d, sqr_size
-	mov     edx, r9d
-	mov     r8,  matrix_ptr
-	xor     rax, rax
-	xor     r10, r10
-	xor     r11, r11
+														; This part adds up each of the columns of the magic square
+
+														; Here's the kicker though, we're using the k1 mask to tell the CPU to only
+														; modify the first x elements of zmm0, dictated by the parts of k1 which are 1s
+														; So, if the bitmask aforementioned is 0000000000011111, we only modify the first
+														; 5 elements of zmm0, i.e. only the bits which are part of the current row
+														; that's being iterated over, and the rest of the bits are being set to 0
+		
+		vmovdqu32   zmm2{k1}{z}, zmmword ptr [r8]       ; Here, we're moving the same 512 bits into zmm2 now, but only modifying the first
+		                                                ; x elements as aforementioned, so we're ONLY dealing with the current row
+		
+		vphaddd     ymm3, ymm2, ymm2					; First, we do a horizontal add of the first 256 bits of zmm2, and store it in ymm3
+		valignq     zmm2, zmm2, zmm2, 4					; then we swap the first and last 256 bits of zmm2
+		vphaddd     ymm4, ymm2, ymm2                    ; and horizontal add the now first bits of zmm2 and then store that in ymm4
+		
+		vpaddb      ymm3, ymm3, ymm4                    ; Then, we can add ymm3 and ymm4 together and keep the sums in ymm4
+		
+		vmovd		edx, xmm3                           ; then we take the first 32 bits and put it in edx
+        vpextrd     eax, xmm3, 1                        ; and keep the second 32 bits in eax
+        add         eax, edx                            ; and add them together
+		
+		vpbroadcastd    zmm1{k2}, eax                   ; and since Idk how to properly modify certain bits of an AVX512 register, I'm just
+														; setting every element in zmm1 to the value of eax, BUT I'm using a mask with only
+														; 1 bit set, so in reality, I'm setting one 32-bit chunk of the register at a time
+														; to create a makeshift lift of all the row sums temporarily
+		
+		shl     r10, 1									; I'm moving the set bit in r10 1 bit over so now
+		kmovd   k2,  r10			                    ; k2 will make us set the next 32 bits in zmm1 in the next iteration
+		
+		mov     rdx, rcx                                ; To calc the next offset, I'm taking the size of the square
+		shl     rdx, 2									; multiplying by 4, as in 4 bytes,
+		add     r8,  rdx								; then adding it to r8 so it's the pointer to the next row
+		
+		dec     r9										; Finally, I just decrement the loop counter. Nice and simple.
+		jnz StraightSumLoop								; and we repeat this for every row in the matrix
+
+	mov     r9d, sqr_size                               ; Okay, onto the next section, I'm using r9d as a loop counter again
+	mov     edx, r9d									; and edx constantly holds the square size for quick access
+	mov     r8,  matrix_ptr								; & r8 holes matrix for quick access too
+	xor     rax, rax									; rax will also be a counter, except incrementing up to sqr_size
+	xor     r10, r10									; r10 will hold the left-to-right diag offset
+	xor     r11, r11                                    ; and r11 will hold the right-to-left offset
 
 	DiagSumLoop:
-		mov     rcx, rax
-		imul    rcx, rdx
-		add     rcx, rax
+		mov     rcx, rax                                ; honestly im too lazy to explain this part at this point
+		imul    rcx, rdx								; theyre simple instructions its not too hard to figure out
+		add     rcx, rax								; its just summing the diagonals of the matrix
 		shl     rcx, 2
 		add     r10d, dword ptr [r8 + rcx]
 			    
@@ -430,7 +448,6 @@ test_if_magic proc
 
 	mov     r9d, sqr_size
 	shl     r9,  1
-	mov     r8,  matrix_ptr
 
 	mov		r12, r9
 	imul	r12, r12
