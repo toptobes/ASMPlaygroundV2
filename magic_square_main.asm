@@ -222,7 +222,7 @@ generate_magic_square proc
 		        cmove	        rax, r14
 		        add		r9,  rax
 
-			jmp	    BacktrackingLoop               ; and then do it all again until we find a number not written to
+			jmp	        BacktrackingLoop               ; and then do it all again until we find a number not written to
 
 		WriteNumber:
 
@@ -419,7 +419,7 @@ test_if_magic proc
 		add     r8,  rdx				; then adding it to r8 so it's the pointer to the next row
 		
 		dec     r9					; Finally, I just decrement the loop counter. Nice and simple.
-		jnz StraightSumLoop				; and we repeat this for every row in the matrix
+		jnz     StraightSumLoop				; and we repeat this for every row in the matrix
 
 	mov     r9d, sqr_size                              	; Okay, onto the next section, I'm using r9d as a loop counter again
 	mov     edx, r9d					; and edx constantly holds the square size for quick access
@@ -444,7 +444,7 @@ test_if_magic proc
 		add     r11d, dword ptr [r8 + rcx]
 			    
 		dec     r9
-		jnz DiagSumLoop
+		jnz     DiagSumLoop
 
 	mov     r9d, sqr_size					; Now, we're preparing for checking the loop for invalid numbers
 	shl     r9,  1						; To ensure that it's a normal magic square
