@@ -217,10 +217,10 @@ generate_magic_square proc
 			sub		r8,  rax
 
 			dec		r9                             ; Move col left one to reset back to the previous col
-		    xor		rax, rax
-		    cmp		r9,  -1                            ; If underflow, reset to the rightmost col
-		    cmove	rax, r14
-		    add		r9,  rax
+		        xor		rax, rax
+		        cmp		r9,  -1                            ; If underflow, reset to the rightmost col
+		        cmove	        rax, r14
+		        add		r9,  rax
 
 			jmp	    BacktrackingLoop               ; and then do it all again until we find a number not written to
 
