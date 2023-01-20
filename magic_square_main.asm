@@ -251,7 +251,7 @@ print_magic_square proc
 		ColumnLoop:
 			push	r11                        ; Same with r11
 
-			mov	rcx, offset number_list_fmt    ; Now we print the number at every index
+			mov	rcx, offset number_list_fmt; Now we print the number at every index
 			mov	edx, dword ptr [r14 + r15 * 4]
 			CALL_BALANCED1 printf
 
@@ -260,7 +260,7 @@ print_magic_square proc
 			dec	r11
 			jnz	ColumnLoop
 
-		mov		rcx, offset newline_str    ; also print a newline after every sqr_size numbers are printed
+		mov	 rcx, offset newline_str           ; also print a newline after every sqr_size numbers are printed
 		CALL_BALANCED2 printf
 
 		pop	r10
