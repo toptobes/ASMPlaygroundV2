@@ -43,7 +43,7 @@ endm
 CALL_BALANCED2 macro method 
 	push	rbp
 	CALL_BALANCED1 method
-	pop		rbp
+	pop	rbp
 endm
 
 ;-------------------------------------------------------------------------------------
