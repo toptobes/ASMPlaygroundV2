@@ -181,22 +181,22 @@ generate_magic_square proc
 	mov     dword ptr [r13 + r9 * 4], r10d ; Speaking of which, we'll write '1' to the board rn, at the top center
 
 	GenerationLoop:
-		inc	r10                        ; We need to increment r10 at the start of every loop so we get 0..n^2 written
+		inc	r10                    ; We need to increment r10 at the start of every loop so we get 0..n^2 written
 
-		dec	r8                         ; Row pointer up 1
+		dec	r8                     ; Row pointer up 1
 		xor	rax, rax
-		cmp	r8,  -1                    ; If underflow, reset to the bottom of the matrix
+		cmp	r8,  -1                ; If underflow, reset to the bottom of the matrix
 		cmove	rax, r14
 		add	r8,  rax
 
-		inc	r9                         ; Col pointer right 1
+		inc	r9                     ; Col pointer right 1
 		xor	rax, rax
-		cmp	r9,  r14                   ; If overflow, reset to the left of the matrix
+		cmp	r9,  r14               ; If overflow, reset to the left of the matrix
 		cmove	rax, r14
 		sub	r9,  rax
 
 		BacktrackingLoop:
-			mov		rax, r8                    ; Convert r8 and r9 into a definite offset
+			mov		rax, r8                        ; Convert r8 and r9 into a definite offset
 			imul	        rax, r14   
 			add		rax, r9
 
@@ -218,7 +218,7 @@ generate_magic_square proc
 
 			dec		r9                             ; Move col left one to reset back to the previous col
 		        xor		rax, rax
-		        cmp		r9,  -1                            ; If underflow, reset to the rightmost col
+		        cmp		r9,  -1                        ; If underflow, reset to the rightmost col
 		        cmove	        rax, r14
 		        add		r9,  rax
 
