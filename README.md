@@ -1,4 +1,4 @@
-# ASMPlaygroundV2
+# ASMPlaygroundV2 (god I wish gpt was available back then)
 Idk, me playing with assembly
 
 ### The formatting looks good in Visual Studio, but it seems to be screwed up in file format...
