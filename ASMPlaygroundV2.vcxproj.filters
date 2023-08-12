@@ -11,7 +11,7 @@
     <MASM Include="2048_tilegen.asm" />
     <MASM Include="2048_util.asm" />
     <MASM Include="2048_input.asm" />
-    <MASM Include="magic_square_main.asm" />
+    <MASM Include="avx512_magic_square_main.asm" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="2048_ansi_support.cpp" />
