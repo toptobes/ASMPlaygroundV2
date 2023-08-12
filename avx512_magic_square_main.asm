@@ -355,7 +355,7 @@ read_sqr endp
 ;-------------------------------------------------------------------------------------
 ; Hooooooooo boy, this is going to be a doozy to explain
 ;
-; it is also terribly stupid and overcomplicated and only works up to a magic square size of 16
+; it is also terribly stupid and overcomplicated and only works up to a magic square size of 256
 ; but I don't care lol I just did it for fun even if parts are inefficient or naive
 ;-------------------------------------------------------------------------------------
 test_if_magic proc
