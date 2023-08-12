@@ -1,4 +1,4 @@
-extern avx512_magic_square_main:proc
+extern magic_square_main:proc
 
 .code
 main proc
